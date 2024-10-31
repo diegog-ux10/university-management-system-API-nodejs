@@ -1,10 +1,20 @@
-// server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const session = require('express-session');
+const passport = require('./passportConfig'); // Importa la configuración de Passport
 
 const app = express();
 app.use(bodyParser.json());
+
+// Configuración de la sesión
+app.use(session({
+    secret: 'your_secret_key',
+    resave: false,
+    saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Conexión a la base de datos
 mongoose.connect('mongodb://localhost:27017/university', {
