@@ -1,48 +1,18 @@
-// routes/students.js
 const express = require('express');
 const router = express.Router();
-const Student = require('../models/student');
 const ensureAuthenticated = require('../middlewares/auth');
+const studentController = require('../controllers/studentController');
 
 // Crear estudiante
-router.post('/', ensureAuthenticated, async (req, res) => {
-    try {
-        const student = new Student(req.body);
-        await student.save();
-        res.status(201).json(student);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-});
+router.post('/', ensureAuthenticated, studentController.createStudent);
 
 // Obtener todos los estudiantes
-router.get('/', async (req, res) => {
-    try {
-        const students = await Student.find();
-        res.json(students);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
+router.get('/', studentController.getAllStudents);
 
 // Actualizar estudiante
-router.put('/:id', ensureAuthenticated, async (req, res) => {
-    try {
-        const student = await Student.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        res.json(student);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-});
+router.put('/:id', ensureAuthenticated, studentController.updateStudent);
 
 // Eliminar estudiante
-router.delete('/:id', ensureAuthenticated, async (req, res) => {
-    try {
-        await Student.findByIdAndDelete(req.params.id);
-        res.json({ message: "Student deleted" });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
+router.delete('/:id', ensureAuthenticated, studentController.deleteStudent);
 
 module.exports = router;
