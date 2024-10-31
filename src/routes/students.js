@@ -2,9 +2,10 @@
 const express = require('express');
 const router = express.Router();
 const Student = require('../models/student');
+const ensureAuthenticated = require('../middlewares/auth');
 
 // Crear estudiante
-router.post('/', async (req, res) => {
+router.post('/', ensureAuthenticated, async (req, res) => {
     try {
         const student = new Student(req.body);
         await student.save();
@@ -25,7 +26,7 @@ router.get('/', async (req, res) => {
 });
 
 // Actualizar estudiante
-router.put('/:id', async (req, res) => {
+router.put('/:id', ensureAuthenticated, async (req, res) => {
     try {
         const student = await Student.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json(student);
@@ -35,7 +36,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Eliminar estudiante
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', ensureAuthenticated, async (req, res) => {
     try {
         await Student.findByIdAndDelete(req.params.id);
         res.json({ message: "Student deleted" });
