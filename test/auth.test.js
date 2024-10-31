@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../server');
-const { User } = require('../models/User'); // Assuming you have this model
+const { User } = require('../src/models/user'); // Assuming you have this model
 
 beforeEach(async () => {
   // Clear users before each test

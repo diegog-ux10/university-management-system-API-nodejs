@@ -1,7 +1,7 @@
 const request = require('supertest');
 const app = require('../server');
-const { User } = require('../models/User');
-const { Department } = require('../models/Department');
+const { User } = require('../src/models/user');
+const { Department } = require('../src/models/department');
 
 let token;
 

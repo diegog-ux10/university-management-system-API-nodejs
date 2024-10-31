@@ -131,8 +131,6 @@ app.post('/api/auth/logout', (req, res) => {
     res.json({ message: 'Logged out successfully' });
 });
 
-app.use(errorHandler);
-
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log("MongoDB connected"))
     .catch(err => console.log(err));

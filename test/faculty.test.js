@@ -1,8 +1,8 @@
 const request = require('supertest');
 const app = require('../server');
-const { User } = require('../models/User');
-const { Department } = require('../models/Department');
-const { Faculty } = require('../models/Faculty'); // Assuming you have this model
+const { User } = require('../src/models/user');
+const { Department } = require('../src/models/department');
+const { Faculty } = require('../src/models/faculty'); // Assuming you have this model
 
 let token;
 let departmentId;
