@@ -12,6 +12,19 @@ const cors = require('cors');
 
 const app = express();
 
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'default',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000
+    },
+    proxy: true
+}));
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json({ limit: '10kb' }));
@@ -41,18 +54,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'default',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        httpOnly: true,
-        sameSite: 'lax',
-        maxAge: 24 * 60 * 60 * 1000
-    },
-    proxy: true
-}));
+
 
 const GitHubStrategy = require('passport-github2').Strategy;
 
