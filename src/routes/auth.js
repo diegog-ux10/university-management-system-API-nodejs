@@ -10,13 +10,13 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 // Ruta de autenticación con GitHub (OAuth)
-router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
+router.get('/github/login', passport.authenticate('github', { scope: ['user:email'] }));
 
 // Callback de GitHub tras la autenticación
-router.get('/github/callback', passport.authenticate('github', { failureRedirect: '/' }),
+router.get('/github/callback', passport.authenticate('github', { failureRedirect: '/github/login' }),
     (req, res) => {
-        // Redirige a la página deseada después de autenticarse correctamente
-        res.redirect('/api/students');
+        req.session.user = req.user;
+        res.redirect('/');
     }
 );
 

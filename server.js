@@ -62,6 +62,15 @@ app.post('/api/auth/logout', (req, res) => {
     res.json({ message: 'Logged out successfully' });
 });
 
+app.set('view engine', 'ejs');
+app.set('views', './src/views');
+
+app.get('/', (req, res) => {
+    res.render('index', { 
+      user: req.session.user || req.user
+    });
+  });
+
 // Iniciar el servidor
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
