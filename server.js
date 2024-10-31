@@ -4,7 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const passport = require('./passportConfig');
+const passport = require('passport');
 const swaggerUi = require('swagger-ui-express');
 const helmet = require('helmet');
 const YAML = require('yamljs');
@@ -12,6 +12,8 @@ const cors = require('cors');
 
 const app = express();
 
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '10kb' }));
@@ -61,6 +63,7 @@ passport.use(new GitHubStrategy({
     passReqToCallback: true
 }, function (request, accessToken, refreshToken, profile, done) {
     console.log('Authentication callback received');
+    console.log('GitHub profile:', profile);
     return done(null, profile);
 }));
 
@@ -121,6 +124,7 @@ app.set('view engine', 'ejs');
 app.set('views', './src/views');
 
 app.get('/', (req, res) => {
+    console.log('User data in req:', req.user);
     res.render('index', { user: req.user });
 });
 
