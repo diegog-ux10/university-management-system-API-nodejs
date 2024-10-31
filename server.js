@@ -24,7 +24,7 @@ mongoose.connect('mongodb://localhost:27017/university', {
   .catch(err => console.log(err));
 
 // Importar y usar las rutas de estudiantes
-const studentRoutes = require('./routes/students');
+const studentRoutes = require('./src/routes/students');
 app.use('/api/students', studentRoutes);
 
 const PORT = process.env.PORT || 5000;
