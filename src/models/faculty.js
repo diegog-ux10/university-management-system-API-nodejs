@@ -1,4 +1,3 @@
-// models/Faculty.js
 const mongoose = require('mongoose');
 
 const FacultySchema = new mongoose.Schema({

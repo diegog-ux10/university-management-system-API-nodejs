@@ -1,6 +1,5 @@
 const Student = require('../models/student');
 
-// Crear estudiante
 exports.createStudent = async (req, res) => {
     try {
         const student = new Student(req.body);
@@ -11,7 +10,6 @@ exports.createStudent = async (req, res) => {
     }
 };
 
-// Obtener todos los estudiantes
 exports.getAllStudents = async (req, res) => {
     try {
         const students = await Student.find();
@@ -21,7 +19,6 @@ exports.getAllStudents = async (req, res) => {
     }
 };
 
-// Actualizar estudiante
 exports.updateStudent = async (req, res) => {
     try {
         const student = await Student.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -31,7 +28,6 @@ exports.updateStudent = async (req, res) => {
     }
 };
 
-// Eliminar estudiante
 exports.deleteStudent = async (req, res) => {
     try {
         await Student.findByIdAndDelete(req.params.id);
