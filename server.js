@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -9,24 +7,21 @@ const swaggerUi = require('swagger-ui-express');
 const helmet = require('helmet');
 const YAML = require('yamljs');
 const cors = require('cors');
+const GitHubStrategy = require('passport-github2').Strategy;
+
+const swaggerDocument = YAML.load('./swagger.yaml');
+
+const courseRoutes = require('./src/routes/courses');
+const facultyRoutes = require('./src/routes/faculty');
+const departmentRoutes = require('./src/routes/departments');
+const studentRoutes = require('./src/routes/students');
+const authRoutes = require('./src/routes/auth');
+const errorHandler = require('./src/middlewares/errorHandler');
+
+require('dotenv').config();
 
 const app = express();
 
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'default',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        httpOnly: true,
-        sameSite: 'lax',
-        maxAge: 24 * 60 * 60 * 1000
-    },
-    proxy: true
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '10kb' }));
@@ -54,9 +49,22 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'default',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000
+    },
+    proxy: true
+}));
 
+app.use(passport.initialize());
+app.use(passport.session());
 
-const GitHubStrategy = require('passport-github2').Strategy;
 
 passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
@@ -79,6 +87,9 @@ passport.deserializeUser((user, done) => {
     done(null, user);
 });
 
+app.set('view engine', 'ejs');
+app.set('views', './src/views');
+
 if (process.env.NODE_ENV !== 'production') {
     app.use((req, res, next) => {
         console.log('Session:', {
@@ -89,26 +100,24 @@ if (process.env.NODE_ENV !== 'production') {
         next();
     });
 }
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log("MongoDB connected"))
-    .catch(err => console.log(err));
 
-const swaggerDocument = YAML.load('./swagger.yaml');
+app.get('/', (req, res) => {
+    console.log('User data in req:', req.user);
+    res.render('index', {
+        user: req.session.user || req.user
+    });
+});
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-const authRoutes = require('./src/routes/auth');
 app.use('/api/auth', authRoutes);
 
-const studentRoutes = require('./src/routes/students');
 app.use('/api/students', studentRoutes);
 
-const courseRoutes = require('./src/routes/courses');
 app.use('/api/courses', courseRoutes);
 
-const facultyRoutes = require('./src/routes/faculty');
 app.use('/api/faculty', facultyRoutes);
 
-const departmentRoutes = require('./src/routes/departments');
 app.use('/api/departments', departmentRoutes);
 
 app.get('/oauth/logout', (req, res) => {
@@ -122,18 +131,17 @@ app.post('/api/auth/logout', (req, res) => {
     res.json({ message: 'Logged out successfully' });
 });
 
-app.set('view engine', 'ejs');
-app.set('views', './src/views');
+app.use(errorHandler);
 
-app.get('/', (req, res) => {
-    console.log('User data in req:', req.user);
-    res.render('index', { user: req.user });
-});
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log("MongoDB connected"))
+    .catch(err => console.log(err));
 
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
 
 module.exports = app;

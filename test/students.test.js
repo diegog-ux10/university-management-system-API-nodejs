@@ -1,17 +1,33 @@
 const request = require('supertest');
 const app = require('../server');
-const mongoose = require('mongoose');
+const { User } = require('../models/User');
+const { Student } = require('../models/Student'); // Assuming you have this model
+
 let token;
 
 beforeAll(async () => {
-  const res = await request(app)
+  // Create test user
+  const user = await User.create({
+    username: 'testuser',
+    email: 'testuser@example.com',
+    password: 'password123'
+  });
+
+  // Login to get token
+  const loginResponse = await request(app)
     .post('/api/auth/login')
     .send({
       email: 'testuser@example.com',
       password: 'password123'
     });
-  token = res.body.token;
-}, 10000);
+
+  token = loginResponse.body.token;
+});
+
+beforeEach(async () => {
+  // Clear students before each test
+  await Student.deleteMany({});
+});
 
 describe('Students Endpoints', () => {
   it('should create a new student', async () => {
@@ -25,17 +41,24 @@ describe('Students Endpoints', () => {
       });
     expect(res.statusCode).toEqual(201);
     expect(res.body).toHaveProperty('name', 'John Doe');
-  }, 10000);
+  });
 
   it('should fetch all students', async () => {
+    // Create a test student first
+    await request(app)
+      .post('/api/students')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        name: 'John Doe',
+        email: 'john.doe@student.com',
+        enrollmentNumber: 'E12345'
+      });
+
     const res = await request(app)
       .get('/api/students')
       .set('Authorization', `Bearer ${token}`);
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body)).toBeTruthy();
-  }, 10000);
-});
-
-afterAll(async () => {
-  await mongoose.connection.close();
+    expect(res.body.length).toBeGreaterThan(0);
+  });
 });

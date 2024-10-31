@@ -19,6 +19,15 @@ exports.getAllStudents = async (req, res) => {
     }
 };
 
+exports.getStudent = async (req, res) => {
+    try {
+        const student = await Student.findById(req.params.id);
+        res.json(student);
+    } catch (err) {
+        res.status(404).json({ message: err.message });
+    }
+};
+
 exports.updateStudent = async (req, res) => {
     try {
         const student = await Student.findByIdAndUpdate(req.params.id, req.body, { new: true });
