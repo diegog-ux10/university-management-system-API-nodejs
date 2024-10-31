@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -17,11 +19,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Conexión a la base de datos
-mongoose.connect('mongodb://localhost:27017/university', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => console.log("MongoDB connected"))
-  .catch(err => console.log(err));
+mongoose.connect(process.env.MONGODB_URI)
+.then(() => console.log("MongoDB connected"))
+.catch(err => console.log(err));
+
 
 // Importar y usar las rutas de estudiantes
 const studentRoutes = require('./src/routes/students');
