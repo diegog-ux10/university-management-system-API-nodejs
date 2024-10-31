@@ -1,10 +1,11 @@
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
+require('dotenv').config();
 
 passport.use(new GitHubStrategy({
-    clientID: 'YOUR_GITHUB_CLIENT_ID',
-    clientSecret: 'YOUR_GITHUB_CLIENT_SECRET',
-    callbackURL: "http://localhost:5000/auth/github/callback"
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: process.env.GITHUB_CALLBACK_URL
 }, (accessToken, refreshToken, profile, done) => {
     // Aquí puedes buscar o crear un usuario en tu base de datos
     // Por ahora, retornamos el perfil de GitHub
