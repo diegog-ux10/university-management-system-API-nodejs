@@ -7,11 +7,106 @@ servers:
   - url: http://localhost:5000/api
 
 paths:
+  /auth/login:
+    post:
+      summary: User login
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: User's email
+                password:
+                  type: string
+                  description: User's password
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT token for authenticated requests
+
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: User's username
+                email:
+                  type: string
+                  description: User's email
+                password:
+                  type: string
+                  description: User's password
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /auth/logout:
+    get:
+      summary: Logout the current user
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logged out successfully"
+
+  /auth/profile:
+    get:
+      summary: Get user profile
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Profile of the authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
   /students:
     get:
       summary: Get all students
       tags:
         - Students
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: List of students
@@ -25,6 +120,8 @@ paths:
       summary: Create a new student
       tags:
         - Students
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -44,6 +141,8 @@ paths:
       summary: Get a student by ID
       tags:
         - Students
+      security:
+        - bearerAuth: []
       parameters:
         - name: studentId
           in: path
@@ -63,6 +162,8 @@ paths:
       summary: Update a student by ID
       tags:
         - Students
+      security:
+        - bearerAuth: []
       parameters:
         - name: studentId
           in: path
@@ -86,6 +187,8 @@ paths:
       summary: Delete a student by ID
       tags:
         - Students
+      security:
+        - bearerAuth: []
       parameters:
         - name: studentId
           in: path
@@ -101,6 +204,8 @@ paths:
       summary: Get all courses
       tags:
         - Courses
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: List of courses
@@ -114,6 +219,8 @@ paths:
       summary: Create a new course
       tags:
         - Courses
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -133,6 +240,8 @@ paths:
       summary: Get a course by ID
       tags:
         - Courses
+      security:
+        - bearerAuth: []
       parameters:
         - name: courseId
           in: path
@@ -150,6 +259,8 @@ paths:
       summary: Update a course by ID
       tags:
         - Courses
+      security:
+        - bearerAuth: []
       parameters:
         - name: courseId
           in: path
@@ -169,6 +280,8 @@ paths:
       summary: Delete a course by ID
       tags:
         - Courses
+      security:
+        - bearerAuth: []
       parameters:
         - name: courseId
           in: path
@@ -179,166 +292,30 @@ paths:
         '200':
           description: Course deleted successfully
 
-  /faculty:
-    get:
-      summary: Get all faculty members
-      tags:
-        - Faculty
-      responses:
-        '200':
-          description: List of faculty members
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Faculty'
-    post:
-      summary: Create a new faculty member
-      tags:
-        - Faculty
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Faculty'
-      responses:
-        '201':
-          description: Faculty member created successfully
-
-  /faculty/{facultyId}:
-    get:
-      summary: Get a faculty member by ID
-      tags:
-        - Faculty
-      parameters:
-        - name: facultyId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: A single faculty member
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Faculty'
-    put:
-      summary: Update a faculty member by ID
-      tags:
-        - Faculty
-      parameters:
-        - name: facultyId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Faculty'
-      responses:
-        '200':
-          description: Faculty member updated successfully
-    delete:
-      summary: Delete a faculty member by ID
-      tags:
-        - Faculty
-      parameters:
-        - name: facultyId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Faculty member deleted successfully
-
-  /departments:
-    get:
-      summary: Get all departments
-      tags:
-        - Departments
-      responses:
-        '200':
-          description: List of departments
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Department'
-    post:
-      summary: Create a new department
-      tags:
-        - Departments
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Department'
-      responses:
-        '201':
-          description: Department created successfully
-
-  /departments/{departmentId}:
-    get:
-      summary: Get a department by ID
-      tags:
-        - Departments
-      parameters:
-        - name: departmentId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: A single department
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Department'
-    put:
-      summary: Update a department by ID
-      tags:
-        - Departments
-      parameters:
-        - name: departmentId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Department'
-      responses:
-        '200':
-          description: Department updated successfully
-    delete:
-      summary: Delete a department by ID
-      tags:
-        - Departments
-      parameters:
-        - name: departmentId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Department deleted successfully
-
 components:
   schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        id: "60c72b2f9b1d4a6a3c8e4b2e"
+        username: "john_doe"
+        email: "john.doe@example.com"
+        createdAt: "2023-10-01T10:00:00Z"
+        updatedAt: "2023-10-01T10:00:00Z"
+
     Student:
       type: object
       properties:
@@ -350,6 +327,7 @@ components:
           type: string
         enrollmentNumber:
           type: string
+
     Course:
       type: object
       properties:
@@ -361,23 +339,9 @@ components:
           type: string
         department:
           type: string
-    Faculty:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        email:
-          type: string
-        department:
-          type: string
-    Department:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        code:
-          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
