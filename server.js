@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const passport = require('./passportConfig'); // Importa la configuración de Passport
+const passport = require('./passportConfig');
 
 const app = express();
 app.use(bodyParser.json());
