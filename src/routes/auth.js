@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const passport = require('../passportConfig');
+const passport = require('../../passportConfig');
 
 // Ruta de registro para autenticación con JWT
 router.post('/register', authController.register);

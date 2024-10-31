@@ -5,13 +5,15 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const passport = require('./passportConfig');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
 
 const app = express();
 app.use(bodyParser.json());
 
 // Configuración de la sesión
 app.use(session({
-    secret:  process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true
 }));
@@ -20,14 +22,18 @@ app.use(passport.session());
 
 // Conexión a la base de datos
 mongoose.connect(process.env.MONGODB_URI)
-.then(() => console.log("MongoDB connected"))
-.catch(err => console.log(err));
+    .then(() => console.log("MongoDB connected"))
+    .catch(err => console.log(err));
 
-// Importar y usar rutas
+// Cargar el archivo de especificación de Swagger
+const swaggerDocument = YAML.load('./swagger.yaml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Importar y usar rutas de autenticación
 const authRoutes = require('./src/routes/auth');
 app.use('/api/auth', authRoutes);
 
-// Importar y usar las rutas de estudiantes
+// Importar y usar rutas de estudiantes
 const studentRoutes = require('./src/routes/students');
 app.use('/api/students', studentRoutes);
 
@@ -56,6 +62,7 @@ app.post('/api/auth/logout', (req, res) => {
     res.json({ message: 'Logged out successfully' });
 });
 
+// Iniciar el servidor
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
