@@ -1,4 +1,4 @@
-const Faculty = require('../models/Faculty');
+const Faculty = require('../models/faculty');
 
 exports.getAllFaculty = async (req, res) => {
     try {
