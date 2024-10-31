@@ -16,7 +16,6 @@ const facultyRoutes = require('./src/routes/faculty');
 const departmentRoutes = require('./src/routes/departments');
 const studentRoutes = require('./src/routes/students');
 const authRoutes = require('./src/routes/auth');
-const errorHandler = require('./src/middlewares/errorHandler');
 
 require('dotenv').config();
 
